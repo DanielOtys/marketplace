@@ -59,69 +59,87 @@ export default function DesktopHomeFeed({
 
         <div className="space-y-12">
           {posts.map((post) => {
-            if (post.type === "single") {
-              return (
-                <article key={post.id} className="bg-surface-container-lowest rounded-lg overflow-hidden shadow-sm">
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                        {post.shopAvatarUrl && (
-                          <Image src={post.shopAvatarUrl} alt={post.shopName} fill className="object-cover" sizes="40px" />
+            // Build a unified images array regardless of post type
+            const images: { url: string; alt: string; price?: string }[] = [];
+            if (post.type === "single" && post.imageUrl) {
+              images.push({ url: post.imageUrl, alt: post.imageAlt || "" });
+            } else if (post.type === "collection" && post.collectionItems) {
+              post.collectionItems.slice(0, 3).forEach((item) => {
+                images.push({ url: item.imageUrl, alt: item.imageAlt, price: item.price });
+              });
+            }
+
+            return (
+              <article key={post.id} className="bg-surface-container-lowest rounded-md overflow-hidden shadow-sm">
+                <div className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                      {post.shopAvatarUrl && (
+                        <Image src={post.shopAvatarUrl} alt={post.shopName} fill className="object-cover" sizes="40px" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm">{post.shopName}</h4>
+                      <p className="text-[10px] text-on-surface/50 uppercase tracking-tighter">
+                        {post.location ? `${post.location} • ` : ""}{post.timeAgo}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="material-symbols-outlined text-on-surface/40">more_horiz</span>
+                </div>
+
+                {images.length === 1 && (
+                  <div className="h-[450px] w-full relative">
+                    <Image src={images[0].url} alt={images[0].alt} fill className="object-cover" sizes="(max-width: 768px) 100vw, 720px" />
+                  </div>
+                )}
+
+                {images.length === 2 && (
+                  <div className="grid grid-cols-2 gap-2 h-[450px]">
+                    {images.map((img, i) => (
+                      <div key={i} className="bg-surface-container-low overflow-hidden h-full relative">
+                        <Image src={img.url} alt={img.alt} fill className="object-cover" sizes="(max-width: 768px) 50vw, 360px" />
+                        {img.price && (
+                          <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold">{img.price}</div>
                         )}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-sm">{post.shopName}</h4>
-                        <p className="text-[10px] text-on-surface/50 uppercase tracking-tighter">{post.location} • {post.timeAgo}</p>
-                      </div>
-                    </div>
-                    <span className="material-symbols-outlined text-on-surface/40">more_horiz</span>
+                    ))}
                   </div>
-                  {post.imageUrl && (
-                    <div className="aspect-[4/5] w-full relative">
-                      <Image src={post.imageUrl} alt={post.imageAlt || ""} fill className="object-cover" sizes="(max-width: 768px) 100vw, 600px" />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center gap-6 mb-4">
-                      <span className="material-symbols-outlined filled text-primary cursor-pointer">favorite</span>
-                      <span className="material-symbols-outlined cursor-pointer">chat_bubble</span>
-                      <span className="material-symbols-outlined cursor-pointer">send</span>
-                      <span className="material-symbols-outlined ml-auto cursor-pointer">bookmark</span>
-                    </div>
-                    <p className="font-bold text-sm mb-2">{post.likes.toLocaleString()} likes</p>
-                    <p className="text-sm leading-relaxed">
-                      <span className="font-bold mr-2">{post.shopName}</span>{post.caption}
-                    </p>
-                  </div>
-                </article>
-              );
-            }
-            return (
-              <article key={post.id} className="space-y-4">
-                <div className="flex items-center gap-3 px-2">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
-                    {post.shopAvatarUrl && (
-                      <Image src={post.shopAvatarUrl} alt={post.shopName} fill className="object-cover" sizes="32px" />
-                    )}
-                  </div>
-                  <h4 className="font-bold text-sm">{post.shopName}</h4>
-                </div>
-                {post.collectionItems && post.collectionItems.length >= 3 && (
+                )}
+
+                {images.length === 3 && (
                   <div className="grid grid-cols-2 gap-2 h-[450px]">
-                    <div className="bg-surface-container-low rounded-lg overflow-hidden h-full relative">
-                      <Image src={post.collectionItems[0].imageUrl} alt={post.collectionItems[0].imageAlt} fill className="object-cover" sizes="(max-width: 768px) 50vw, 300px" />
-                      <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold">{post.collectionItems[0].price}</div>
+                    <div className="bg-surface-container-low overflow-hidden h-full relative">
+                      <Image src={images[0].url} alt={images[0].alt} fill className="object-cover" sizes="(max-width: 768px) 50vw, 360px" />
+                      {images[0].price && (
+                        <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold">{images[0].price}</div>
+                      )}
                     </div>
                     <div className="grid grid-rows-2 gap-2 h-full">
-                      {post.collectionItems.slice(1, 3).map((item, i) => (
-                        <div key={i} className="bg-surface-container-low rounded-lg overflow-hidden relative">
-                          <Image src={item.imageUrl} alt={item.imageAlt} fill className="object-cover" sizes="(max-width: 768px) 50vw, 300px" />
-                          <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold">{item.price}</div>
+                      {images.slice(1, 3).map((img, i) => (
+                        <div key={i} className="bg-surface-container-low overflow-hidden relative">
+                          <Image src={img.url} alt={img.alt} fill className="object-cover" sizes="(max-width: 768px) 50vw, 360px" />
+                          {img.price && (
+                            <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold">{img.price}</div>
+                          )}
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
+
+                <div className="p-6">
+                  <div className="flex items-center gap-6 mb-4">
+                    <span className="material-symbols-outlined filled text-primary cursor-pointer">favorite</span>
+                    <span className="material-symbols-outlined cursor-pointer">chat_bubble</span>
+                    <span className="material-symbols-outlined cursor-pointer">send</span>
+                    <span className="material-symbols-outlined ml-auto cursor-pointer">bookmark</span>
+                  </div>
+                  <p className="font-bold text-sm mb-2">{post.likes.toLocaleString()} likes</p>
+                  <p className="text-sm leading-relaxed">
+                    <span className="font-bold mr-2">{post.shopName}</span>{post.caption}
+                  </p>
+                </div>
               </article>
             );
           })}
