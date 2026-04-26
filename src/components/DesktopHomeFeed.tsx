@@ -15,8 +15,8 @@ export default function DesktopHomeFeed({
   suggestedShops,
 }: Props) {
   return (
-    <div className="hidden md:flex min-h-screen">
-      <aside className="h-screen w-64 fixed left-0 top-0 bg-[#faf9f8] flex flex-col gap-2 py-8 px-4 font-['Inter'] text-base font-semibold">
+    <div className="hidden md:block min-h-screen">
+      <aside className="h-screen w-64 fixed left-0 top-0 bg-[#faf9f8] flex flex-col gap-2 py-8 px-4 font-['Inter'] text-base font-semibold z-10">
         <div className="px-4 mb-8">
           <span className="text-xl font-bold italic text-[#1a1c1c]">[YourBrandName]</span>
           <p className="text-xs font-normal opacity-50">Digital Curator</p>
@@ -41,7 +41,7 @@ export default function DesktopHomeFeed({
         <button className="bg-gradient-to-br from-primary to-primary-container text-white rounded-full py-4 mx-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform">Create Post</button>
       </aside>
 
-      <main className="ml-64 mr-96 flex-1 max-w-[600px] mx-auto pt-8 pb-20 px-4">
+      <main className="mx-auto pt-8 pb-20 px-4" style={{ width: '720px', marginLeft: 'auto', marginRight: 'calc(50% - 300px)' }}>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-8 mb-8">
           {stories.map((story) => (
             <div key={story.id} className="flex-shrink-0 flex flex-col items-center gap-2">
@@ -61,7 +61,7 @@ export default function DesktopHomeFeed({
           {posts.map((post) => {
             if (post.type === "single") {
               return (
-                <article key={post.id} className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+                <article key={post.id} className="bg-surface-container-lowest rounded-lg overflow-hidden shadow-sm">
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="relative w-10 h-10 rounded-full overflow-hidden">
@@ -128,7 +128,7 @@ export default function DesktopHomeFeed({
         </div>
       </main>
 
-      <aside className="w-96 h-screen fixed right-0 top-0 bg-[#faf9f8] p-8 space-y-10 overflow-y-auto hide-scrollbar">
+      <aside className="w-96 h-screen fixed right-0 top-0 bg-[#faf9f8] p-8 space-y-10 overflow-y-auto hide-scrollbar z-10">
         <div className="relative">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/30">search</span>
           <input className="w-full bg-surface-container-highest border-none rounded-full py-3 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary/20 outline-none" placeholder="Search curators & drops" type="text" />
